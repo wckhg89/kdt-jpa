@@ -89,12 +89,11 @@ class CustomerRepositoryTest {
         customer2.setFirstName("guppy");
         customer2.setLastName("hong");
 
-
-
         customerRepository.saveAll(Lists.newArrayList(customer1, customer2));
 
         // When
         List<Customer> selectedCustomers = customerRepository.findAll();
+
 
         // Then
         assertThat(selectedCustomers.size()).isEqualTo(2);

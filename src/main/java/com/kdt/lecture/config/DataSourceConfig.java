@@ -13,9 +13,9 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.kdt.lecture.domain")
 public class DataSourceConfig {
 
     @Bean
@@ -29,6 +29,12 @@ public class DataSourceConfig {
         return dataSource;
     }
 
+    /**
+     * @JpaVendorAdapter : JPA는 여러 구현체가 존재하기 때문에 구현체별 설정을 지원하기 위한 클래스이다.
+     * Hibernate를 사용하기 때문에 HibernateJpaVendorAdapter를 사용한다.
+     * @param jpaProperties
+     * @return
+     */
     @Bean
     public JpaVendorAdapter jpaVendorAdapter(JpaProperties jpaProperties) {
         AbstractJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
@@ -38,13 +44,26 @@ public class DataSourceConfig {
         return adapter;
     }
 
+    /**
+     * @LocalContainerEntityManagerFactoryBean :
+     * EntityManagerFactoryBean을 Spring에서 사용하기 위한 클래스
+     * @param dataSource
+     * @param jpaVendorAdapter
+     * @param jpaProperties
+     * @return
+     */
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter,
+                                                                       JpaProperties jpaProperties) {
         LocalContainerEntityManagerFactoryBean em
                 = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
         em.setPackagesToScan("com.kdt.lecture.domain");
         em.setJpaVendorAdapter(jpaVendorAdapter);
+
+        Properties properties = new Properties();
+        properties.putAll(jpaProperties.getProperties());
+        em.setJpaProperties(properties);
 
         return em;
     }
@@ -56,6 +75,4 @@ public class DataSourceConfig {
 
         return transactionManager;
     }
-
-
 }
