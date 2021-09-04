@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -30,12 +30,19 @@ public class Order {
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> orderItems;
+
     public void setMember(Member member) {
-        if(Objects.nonNull(member)) {
+        if(Objects.nonNull(this.member)) {
             this.member.getOrders().remove(this);
         }
 
         this.member = member;
         member.getOrders().add(this);
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        orderItem.setOrder(this);
     }
 }

@@ -2,8 +2,11 @@ package com.kdt.lecture.domain.order;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -12,7 +15,7 @@ import java.util.List;
 @Setter
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "name", nullable = false, length = 30)
@@ -30,5 +33,9 @@ public class Member {
     private String description;
 
     @OneToMany(mappedBy = "member")
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
+
+    public void addOrder(Order order) {
+        order.setMember(this);
+    }
 }
