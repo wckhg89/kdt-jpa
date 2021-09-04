@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "member")
@@ -28,4 +29,6 @@ public class Member {
     @Column(name = "description", nullable = true)
     private String description;
 
+    @OneToMany(mappedBy = "member")
+    private List<Order> orders;
 }

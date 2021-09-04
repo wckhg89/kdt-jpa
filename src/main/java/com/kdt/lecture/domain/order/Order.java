@@ -6,13 +6,13 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "orders")
 @Getter
 @Setter
 public class Order {
-
     @Id
     @Column(name = "id")
     private String uuid;
@@ -26,6 +26,16 @@ public class Order {
     @Lob
     private String memo;
 
-    @Column(name = "member_id") // fk
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", referencedColumnName = "id")
+    private Member member;
+
+    public void setMember(Member member) {
+        if(Objects.nonNull(member)) {
+            this.member.getOrders().remove(this);
+        }
+
+        this.member = member;
+        member.getOrders().add(this);
+    }
 }
