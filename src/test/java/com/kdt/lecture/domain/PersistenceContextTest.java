@@ -23,109 +23,104 @@ public class PersistenceContextTest {
     @BeforeEach
     void setUp() {
         repository.deleteAll();
-
-
     }
-
 
     @Test
     void 저장() {
-        EntityManager em = emf.createEntityManager(); // 1) 엔티티 매니저 생성
-        EntityTransaction transaction = em.getTransaction(); // 2) 트랜잭션 획득
-        transaction.begin(); // 3) 트랙잰셕 begin
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
 
-        Customer customer = new Customer(); // 4-1) 비영속
+        transaction.begin();
+
+        Customer customer = new Customer(); // 비영속상태
         customer.setId(1L);
         customer.setFirstName("honggu");
         customer.setLastName("kang");
 
-        em.persist(customer); // 4-2)영속화
-
-        transaction.commit(); // 5) 트랜잭션 commit
+        entityManager.persist(customer); // 비영속 -> 영속 (영속화)
+        transaction.commit(); // entityManager.flush();
     }
 
     @Test
-    void 조회() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
+    void 조회_DB조회() {
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+
         transaction.begin();
 
-        Customer customer = new Customer();
+        Customer customer = new Customer(); // 비영속상태
         customer.setId(1L);
         customer.setFirstName("honggu");
         customer.setLastName("kang");
 
-        em.persist(customer);
+        entityManager.persist(customer); // 비영속 -> 영속 (영속화)
+        transaction.commit(); // entityManager.flush();
 
-        transaction.commit();
+        entityManager.detach(customer); // 영속 -> 준영속
 
-        em.clear(); //영속성 컨텍스트를 초기화 한다.
-
-        Customer entity = em.find(Customer.class, 1L); // DB 에서 조회한다.
-        log.info("{} {}", entity.getFirstName(), entity.getLastName());
+        Customer selected = entityManager.find(Customer.class, 1L);
+        log.info("{} {}", selected.getFirstName(), selected.getLastName());
     }
 
     @Test
     void 조회_1차캐시_이용() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+
         transaction.begin();
 
-        Customer customer = new Customer();
+        Customer customer = new Customer(); // 비영속상태
         customer.setId(1L);
         customer.setFirstName("honggu");
         customer.setLastName("kang");
 
-        em.persist(customer);
+        entityManager.persist(customer); // 비영속 -> 영속 (영속화)
+        transaction.commit(); // entityManager.flush();
 
-        transaction.commit();
-
-        Customer entity = em.find(Customer.class, 1L); // 1차 캐시에서 조회한다.
-        log.info("{} {}", entity.getFirstName(), entity.getLastName());
+        Customer selected = entityManager.find(Customer.class, 1L);
+        log.info("{} {}", selected.getFirstName(), selected.getLastName());
     }
 
     @Test
     void 수정() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+
         transaction.begin();
 
-        Customer customer = new Customer();
+        Customer customer = new Customer(); // 비영속상태
         customer.setId(1L);
         customer.setFirstName("honggu");
         customer.setLastName("kang");
 
-        em.persist(customer);
-        transaction.commit();
+        entityManager.persist(customer); // 비영속 -> 영속 (영속화)
+        transaction.commit(); // entityManager.flush();
 
         transaction.begin();
+        customer.setFirstName("guppy");
+        customer.setLastName("hong");
 
-        Customer entity = em.find(Customer.class, 1L);
-        entity.setFirstName("guppy");
-        entity.setLastName("hong");
-
-        // em.update(entity) ??
         transaction.commit();
     }
 
     @Test
     void 삭제() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+
         transaction.begin();
 
-        Customer customer = new Customer();
+        Customer customer = new Customer(); // 비영속상태
         customer.setId(1L);
         customer.setFirstName("honggu");
         customer.setLastName("kang");
 
-        em.persist(customer);
-        transaction.commit();
+        entityManager.persist(customer); // 비영속 -> 영속 (영속화)
+        transaction.commit(); // entityManager.flush();
 
         transaction.begin();
 
-        Customer entity = em.find(Customer.class, 1L);
-        em.remove(entity);
+        entityManager.remove(customer);
 
         transaction.commit();
     }
