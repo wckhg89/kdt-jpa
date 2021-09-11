@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-@Table(name = "orders")
 @Getter
 @Setter
+@Entity
+@Table(name = "orders")
 public class Order extends BaseEntity {
     @Id
     @Column(name = "id")
