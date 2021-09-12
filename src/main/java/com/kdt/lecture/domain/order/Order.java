@@ -12,7 +12,7 @@ import java.util.Objects;
 @Table(name = "orders")
 @Getter
 @Setter
-public class Order {
+public class Order extends BaseEntity {
     @Id
     @Column(name = "id")
     private String uuid;
@@ -30,7 +30,7 @@ public class Order {
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
     public void setMember(Member member) {

@@ -2,18 +2,16 @@ package com.kdt.lecture.domain.order;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "member")
 @Getter
 @Setter
-public class Member {
+public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
